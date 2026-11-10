@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
+<title>لوحة الإدارة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<script src="config.js"></script>
+<style>
+:root{--bg:#070d1a;--card:rgba(255,255,255,.055);--card-b:rgba(255,255,255,.11);--text:#eef2fb;--muted:#9aa8c7;--gold:#d8b45a;--gold2:#f3d98f;--teal:#3fd0c9;--blue:#4c7dff;--danger:#ff6b7a;--ok:#39d98a;--warn:#ffb547}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Tajawal",system-ui,sans-serif;background:radial-gradient(1000px 600px at 90% -10%,#15275a,transparent 60%),var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--gold2)}
+.wrap{max-width:1100px;margin:auto;padding:16px}
+.inp{width:100%;background:rgba(0,0,0,.3);border:1.5px solid var(--card-b);border-radius:12px;padding:10px 12px;outline:none}
+.inp:focus{border-color:var(--gold)}
+select.inp option{background:#0c1730}
+.btn{border:0;cursor:pointer;border-radius:12px;padding:10px 18px;font-weight:800;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1405;transition:transform .2s}
+.btn:hover{transform:translateY(-1px)}.btn:disabled{opacity:.6}
+.btn.ghost{background:transparent;border:1.5px solid var(--card-b);color:var(--text)}
+.btn.sm{padding:6px 12px;font-size:.85rem}
+
+/* الدخول */
+#login{min-height:100vh;display:grid;place-items:center;padding:16px}
+.lbox{width:100%;max-width:380px;background:var(--card);border:1px solid var(--card-b);border-radius:24px;padding:30px;text-align:center;animation:in .7s ease both}
+@keyframes in{from{opacity:0;transform:translateY(20px)}}
+.lbox svg{width:70px;height:70px;margin-bottom:8px;animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-6px)}}
+.lbox h1{font-size:1.4rem;margin-bottom:16px}
+.lbox .inp{margin-bottom:12px;text-align:center}
+.lbox .btn{width:100%}
+.lerr{color:var(--danger);font-size:.85rem;min-height:1.3em;margin-top:10px}
+
+/* اللوحة */
+#app{display:none}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 0}
+.top h1{font-size:1.3rem}
+.top .acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.switch{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--card-b);border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer;user-select:none}
+.switch i{width:38px;height:22px;border-radius:999px;background:var(--danger);position:relative;transition:background .3s}
+.switch i::after{content:"";position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:right .3s}
+.switch.on i{background:var(--ok)}.switch.on i::after{right:19px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--card-b);border-radius:16px;padding:14px;text-align:center;cursor:pointer;transition:border-color .2s,transform .2s}
+.stat:hover,.stat.sel{border-color:var(--gold);transform:translateY(-2px)}
+.stat b{display:block;font-size:1.7rem}
+.stat span{font-size:.82rem;color:var(--muted)}
+.tools{display:flex;gap:10px;margin-bottom:14px}
+.tools .inp:first-child{flex:1}
+.tools select{max-width:170px}
+.list{display:grid;gap:12px}
+.item{background:var(--card);border:1px solid var(--card-b);border-radius:18px;overflow:hidden;animation:in .4s ease both}
+.ihead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 16px;cursor:pointer}
+.ihead .id{font-weight:800;direction:ltr;color:var(--gold2)}
+.ihead .svc{flex:1;min-width:140px}
+.ihead .dt{font-size:.8rem;color:var(--muted);direction:ltr}
+.chip{font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:999px}
+.st-جديد{background:rgba(76,125,255,.2);color:#9fb8ff}
+.st-قيد{background:rgba(255,181,71,.18);color:var(--warn)}
+.st-منجز{background:rgba(57,217,138,.18);color:var(--ok)}
+.st-مرفوض{background:rgba(255,107,122,.18);color:var(--danger)}
+.ibody{display:none;padding:0 16px 16px;border-top:1px dashed var(--card-b)}
+.item.open .ibody{display:block}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin:14px 0}
+.kv div{background:rgba(0,0,0,.22);border-radius:10px;padding:8px 12px}
+.kv span{display:block;font-size:.75rem;color:var(--muted)}
+.kv b{direction:ltr;unicode-bidi:plaintext}
+.desc{background:rgba(0,0,0,.22);border-radius:10px;padding:10px 12px;white-space:pre-wrap;word-break:break-word;margin-bottom:12px}
+.flinks{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.flinks a{background:rgba(216,180,90,.12);border:1px solid rgba(216,180,90,.35);border-radius:10px;padding:5px 12px;text-decoration:none;font-size:.85rem}
+.edit{display:grid;grid-template-columns:180px 1fr auto;gap:8px;align-items:center}
+.empty{text-align:center;color:var(--muted);padding:40px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#111c36;border:1px solid var(--card-b);padding:10px 18px;border-radius:12px;transition:transform .35s;z-index:50}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.note{font-size:.78rem;color:var(--muted);text-align:center;margin:18px 0}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.edit{grid-template-columns:1fr}.tools{flex-direction:column}.tools select{max-width:none}}
+</style>
+</head>
+<body>
+
+<section id="login">
+  <div class="lbox">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#f3d98f" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="16" r="1.3"/></svg>
+    <h1>لوحة الإدارة</h1>
+    <input class="inp" type="password" id="pw" placeholder="كلمة المرور" autocomplete="current-password">
+    <button class="btn" id="loginBtn">دخول</button>
+    <div class="lerr" id="lerr"></div>
+  </div>
+</section>
+
+<section id="app">
+  <div class="wrap">
+    <div class="top">
+      <h1>الطلبات الواردة</h1>
+      <div class="acts">
+        <div class="switch" id="openSw" title="إيقاف أو تشغيل استقبال الطلبات"><i></i><span>استقبال الطلبات</span></div>
+        <button class="btn ghost sm" id="refresh">تحديث</button>
+        <button class="btn ghost sm" id="logout">خروج</button>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="tools">
+      <input class="inp" id="q" placeholder="بحث برقم الطلب أو الاسم أو الرقم العسكري...">
+      <select class="inp" id="svcF"><option value="">كل الخدمات</option></select>
+    </div>
+    <div class="list" id="list"></div>
+    <p class="note">🔒 البيانات الحساسة مخفية افتراضياً. اضغط «إظهار البيانات» داخل الطلب لعرضها. يتم الخروج تلقائياً بعد 15 دقيقة من عدم النشاط.</p>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+const C=window.APP_CONFIG||{}, $=s=>document.querySelector(s);
+let token=null, rows=[], statuses=['جديد','قيد المعالجة','منجز','مرفوض'], filterSt='', isOpen=true;
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function maskNum(s){s=String(s||'');return s.length<=3?'•'.repeat(s.length):'•'.repeat(s.length-3)+s.slice(-3);}
+function maskName(s){const p=String(s||'').trim().split(/\s+/);return p[0]+(p.length>1?' '+p.slice(1).map(w=>w[0]+'•••').join(' '):'');}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
+function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k);if(v===null)sessionStorage.removeItem(k);else sessionStorage.setItem(k,v);}catch(e){return null;}}
+
+async function api(p){
+  if(!C.API_URL) throw new Error('لم يتم ضبط رابط API في config.js');
+  const r=await fetch(C.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p),credentials:'omit'});
+  const j=await r.json();
+  if(j && j.auth===false){logout(true);throw new Error(j.error);}
+  return j;
+}
+
+/* ---------- الدخول ---------- */
+async function doLogin(){
+  const pw=$('#pw').value; if(!pw) return;
+  $('#loginBtn').disabled=true; $('#lerr').textContent='';
+  try{
+    const r=await api({action:'login',password:pw});
+    if(!r.ok) throw new Error(r.error);
+    token=r.token; ss('adm_t',token); $('#pw').value='';
+    showApp();
+  }catch(e){$('#lerr').textContent=e.message||'تعذر الدخول';}
+  finally{$('#loginBtn').disabled=false;}
+}
+$('#loginBtn').onclick=doLogin;
+$('#pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+function showApp(){$('#login').style.display='none';$('#app').style.display='block';load();}
+function logout(expired){
+  if(token&&!expired) api({action:'logout',token}).catch(()=>{});
+  token=null; ss('adm_t',null); rows=[]; $('#list').innerHTML='';
+  $('#app').style.display='none'; $('#login').style.display='grid';
+  if(expired) $('#lerr').textContent='انتهت الجلسة، سجّل الدخول من جديد';
+}
+$('#logout').onclick=()=>logout(false);
+
+/* خروج تلقائي عند عدم النشاط */
+let idle; function resetIdle(){clearTimeout(idle);idle=setTimeout(()=>{if(token){logout(false);$('#lerr').textContent='تم الخروج تلقائياً لعدم النشاط';}},15*60*1000);}
+['click','keydown','touchstart','scroll'].forEach(ev=>addEventListener(ev,resetIdle,{passive:true}));resetIdle();
+
+/* ---------- البيانات ---------- */
+async function load(){
+  $('#list').innerHTML='<div class="empty">جارٍ التحميل...</div>';
+  try{
+    const r=await api({action:'list',token});
+    if(!r.ok) throw new Error(r.error);
+    rows=r.rows; statuses=r.statuses||statuses; isOpen=r.open;
+    $('#openSw').classList.toggle('on',isOpen);
+    const svcs=[...new Set(rows.map(x=>x.service))];
+    const cur=$('#svcF').value;
+    $('#svcF').innerHTML='<option value="">كل الخدمات</option>'+svcs.map(s=>`<option>${esc(s)}</option>`).join('');
+    $('#svcF').value=cur;
+    render();
+  }catch(e){$('#list').innerHTML=`<div class="empty">${esc(e.message)}</div>`;}
+}
+$('#refresh').onclick=load;
+
+function stCls(s){return 'st-'+String(s).split(' ')[0];}
+function render(){
+  const counts={}; statuses.forEach(s=>counts[s]=0); rows.forEach(r=>counts[r.status]=(counts[r.status]||0)+1);
+  $('#stats').innerHTML=statuses.map(s=>`<div class="stat ${filterSt===s?'sel':''}" data-s="${esc(s)}"><b>${counts[s]||0}</b><span>${esc(s)}</span></div>`).join('');
+  document.querySelectorAll('.stat').forEach(el=>el.onclick=()=>{filterSt=filterSt===el.dataset.s?'':el.dataset.s;render();});
+
+  const q=$('#q').value.trim().toLowerCase(), sv=$('#svcF').value;
+  const list=rows.filter(r=>(!filterSt||r.status===filterSt)&&(!sv||r.service===sv)&&(!q||[r.id,r.name,r.milNo,r.fileNo,r.phone].join(' ').toLowerCase().includes(q)));
+  if(!list.length){$('#list').innerHTML='<div class="empty">لا توجد طلبات</div>';return;}
+  $('#list').innerHTML=list.map(r=>`
+    <div class="item" data-id="${esc(r.id)}">
+      <div class="ihead">
+        <span class="id">${esc(r.id)}</span>
+        <span class="svc">${esc(r.service)}${r.other?' — '+esc(r.other):''}<br><small style="color:var(--muted)">${esc(maskName(r.name))}</small></span>
+        <span class="dt">${esc(r.date)}</span>
+        <span class="chip ${stCls(r.status)}">${esc(r.status)}</span>
+      </div>
+      <div class="ibody">
+        <div class="kv">
+          <div><span>الاسم</span><b data-f="name">${esc(maskName(r.name))}</b></div>
+          <div><span>رقم الهاتف</span><b data-f="phone">${esc(maskNum(r.phone))}</b></div>
+          <div><span>الرقم العسكري</span><b data-f="milNo">${esc(maskNum(r.milNo))}</b></div>
+          <div><span>رقم الملف</span><b data-f="fileNo">${esc(maskNum(r.fileNo))}</b></div>
+        </div>
+        <button class="btn ghost sm reveal" style="margin-bottom:12px">👁 إظهار البيانات</button>
+        <div class="desc">${esc(r.desc)}</div>
+        ${r.files.length?`<div class="flinks">${r.files.map(f=>`<a href="${esc(f.url)}" target="_blank" rel="noopener noreferrer">📎 المرفق ${f.n}</a>`).join('')}</div>`:'<p style="color:var(--muted);font-size:.85rem;margin-bottom:12px">لا توجد مرفقات</p>'}
+        <div class="edit">
+          <select class="inp st">${statuses.map(s=>`<option ${s===r.status?'selected':''}>${esc(s)}</option>`).join('')}</select>
+          <input class="inp note" maxlength="300" placeholder="ملاحظة داخلية (اختياري)" value="${esc(r.note)}">
+          <button class="btn sm save">حفظ</button>
+        </div>
+      </div>
+    </div>`).join('');
+
+  document.querySelectorAll('.item').forEach(el=>{
+    const r=rows.find(x=>x.id===el.dataset.id);
+    el.querySelector('.ihead').onclick=()=>el.classList.toggle('open');
+    let shown=false; const rb=el.querySelector('.reveal');
+    rb.onclick=()=>{
+      shown=!shown;
+      el.querySelector('[data-f=name]').textContent=shown?r.name:maskName(r.name);
+      ['phone','milNo','fileNo'].forEach(k=>el.querySelector(`[data-f=${k}]`).textContent=shown?r[k]:maskNum(r[k]));
+      rb.textContent=shown?'🙈 إخفاء البيانات':'👁 إظهار البيانات';
+      if(shown) setTimeout(()=>{if(shown)rb.click();},60000); // إخفاء تلقائي بعد دقيقة
+    };
+    el.querySelector('.save').onclick=async b=>{
+      const btn=b.currentTarget; btn.disabled=true;
+      try{
+        const status=el.querySelector('.st').value, note=el.querySelector('.note').value;
+        const res=await api({action:'update',token,id:r.id,status,note});
+        if(!res.ok) throw new Error(res.error);
+        r.status=status; r.note=note; toast('تم الحفظ ✓'); render();
+      }catch(e){toast(e.message||'تعذر الحفظ');}
+      finally{btn.disabled=false;}
+    };
+  });
+}
+$('#q').addEventListener('input',render);
+$('#svcF').addEventListener('change',render);
+
+$('#openSw').onclick=async()=>{
+  const want=!isOpen;
+  if(!want && !confirm('هل تريد إيقاف استقبال الطلبات مؤقتاً؟')) return;
+  try{const r=await api({action:'setOpen',token,open:want});if(!r.ok)throw new Error(r.error);isOpen=r.open;$('#openSw').classList.toggle('on',isOpen);toast(isOpen?'تم تشغيل استقبال الطلبات':'تم إيقاف استقبال الطلبات');}
+  catch(e){toast(e.message);}
+};
+
+/* استعادة الجلسة داخل نفس التبويب فقط */
+const saved=ss('adm_t'); if(saved){token=saved;showApp();}
+})();
+</script>
+</body>
+</html>
