@@ -203,7 +203,6 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;padding:30px 16px;b
 <body>
 <div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
 <div class="grid"></div>
-<div class="particles" id="particles"></div>
 
 <div class="demo" id="demoBar">وضع التجربة: لم يتم ربط الموقع بقاعدة البيانات بعد، والطلبات لن تُحفظ.</div>
 
@@ -231,13 +230,6 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;padding:30px 16px;b
     </div>
   </section>
 
-  <div class="steps reveal">
-    <div class="step"><div class="n">1</div><b>اختر الخدمة</b><span>واطّلع على متطلباتها</span></div>
-    <div class="step"><div class="n">2</div><b>أدخل بياناتك</b><span>الاسم والأرقام</span></div>
-    <div class="step"><div class="n">3</div><b>أرفق المستندات</b><span>صور أو PDF</span></div>
-    <div class="step"><div class="n">4</div><b>استلم رقم الطلب</b><span>للمتابعة لاحقاً</span></div>
-  </div>
-
   <div class="sec-title reveal"><h2>الخدمات المتاحة</h2><div class="line"></div></div>
   <div class="services" id="services"></div>
 
@@ -261,7 +253,7 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;padding:30px 16px;b
       </div>
       <div class="row">
         <div class="field">
-          <label for="milNo">الرقم العسكري <em>*</em></label>
+          <label for="milNo">الرقم العسكري <span style="color:var(--muted);font-weight:500">(اختياري)</span></label>
           <input class="inp" id="milNo" name="milNo" inputmode="numeric" maxlength="12" placeholder="أرقام فقط" dir="ltr">
           <div class="err"></div>
         </div>
@@ -385,18 +377,6 @@ const hero = $('#hero'), heroImg = $('#heroImg');
 heroImg.onerror = () => hero.classList.add('noimg');
 heroImg.src = C.HERO_IMAGE || 'hero.png';
 
-/* ---------- جزيئات الخلفية ---------- */
-(function(){
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const box = $('#particles'), n = innerWidth < 700 ? 14 : 28;
-  for (let i=0;i<n;i++){
-    const s=document.createElement('span');
-    s.style.left=Math.random()*100+'vw'; s.style.top=(80+Math.random()*30)+'vh';
-    s.style.animationDuration=(10+Math.random()*16)+'s'; s.style.animationDelay=(-Math.random()*20)+'s';
-    box.appendChild(s);
-  }
-})();
-
 /* ---------- الخدمات ---------- */
 const svcBox = $('#services'), sel = $('#service'), reqPanel = $('#reqPanel');
 SERVICES.forEach((s,i)=>{
@@ -447,7 +427,7 @@ function validate(){
   const nm=name.value.trim().replace(/\s+/g,' ');
   f(name, nm.length>=6 && nm.split(' ').length>=2 && !/[<>{}]/.test(nm), 'اكتب الاسم الكامل (اسمين على الأقل)');
   f(phone, /^[2569]\d{7}$/.test(phone.value), 'رقم الهاتف يجب أن يكون 8 أرقام');
-  f(mil, /^\d{3,12}$/.test(mil.value), 'أدخل الرقم العسكري بشكل صحيح');
+  f(mil, /^\d{0,12}$/.test(mil.value), 'الرقم العسكري أرقام فقط');
   f(fno, /^[\w\-\/]{1,20}$/.test(fno.value), 'أدخل رقم الملف');
   f(sel, !!sel.value, 'اختر نوع الخدمة');
   const s=SERVICES.find(x=>x.id===sel.value);
